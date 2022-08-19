@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "39699677984",
+    "project_id": "social-media-app-37908",
+    "storage_bucket": "social-media-app-37908.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39699677984:android:07c990438ee8630de08d45",
+        "android_client_info": {
+          "package_name": "com.glebov.social_media_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "39699677984-prdeff6u5cogisn38ln3tac47dt1dfth.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApfAF-RG32LY_AjAe9tOQ5dWwchqTCYRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "39699677984-prdeff6u5cogisn38ln3tac47dt1dfth.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
