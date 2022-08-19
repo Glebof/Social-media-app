@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PostsScreen extends StatefulWidget {
+
+  static const String id = "posts_screen";
+
   const PostsScreen({Key? key}) : super(key: key);
 
   @override
