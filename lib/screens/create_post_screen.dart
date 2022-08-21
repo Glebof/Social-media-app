@@ -33,7 +33,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       });
 
       FirebaseFirestore.instance.collection("posts").add({
-        "timastamp" : Timestamp.now(),
+        "timestamp" : Timestamp.now(),
         "userID" : FirebaseAuth.instance.currentUser!.uid,
         "description" : _descriprion,
         "userName" :  FirebaseAuth.instance.currentUser!.displayName,

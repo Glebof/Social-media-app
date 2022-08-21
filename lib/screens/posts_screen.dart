@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:social_media_app/screens/sign_in_screen.dart';
 import 'dart:io';
 import '../bloc/auth_cubit.dart';
+import '../models/post_model.dart';
+import 'chat_screen.dart';
 import 'create_post_screen.dart';
 
 class PostsScreen extends StatefulWidget {
@@ -61,27 +63,42 @@ class _PostsScreenState extends State<PostsScreen> {
               itemCount: snapshot.data?.docs.length ?? 0,
               itemBuilder: (context, index) {
                 final QueryDocumentSnapshot doc = snapshot.data!.docs[index];
-                return Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: NetworkImage(doc["imageURL"]),
-                            fit: BoxFit.cover,
+
+                final Post post = Post(
+                    timestamp: doc["timestamp"],
+                    userId: doc["userID"],
+                    id: doc["postID"],
+                    description: doc["description"],
+                    imageURL: doc["imageURL"],
+                    userName: doc["userName"]);
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(ChatScreen.id, arguments: post);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(post.imageURL),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(doc["userName"],
-                          style: Theme.of(context).textTheme.headline6),
-                      SizedBox(height: 5),
-                      Text(doc["description"],
-                          style: Theme.of(context).textTheme.headline5),
-                    ],
+                        SizedBox(height: 5),
+                        Text(post.userName,
+                            style: Theme.of(context).textTheme.headline6),
+                        SizedBox(height: 5),
+                        Text(post.description,
+                            style: Theme.of(context).textTheme.headline5),
+                      ],
+                    ),
                   ),
                 );
               });
