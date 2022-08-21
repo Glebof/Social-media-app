@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (prevState, currentState) {
           if (currentState is AuthSignedIn) {
-            Navigator.of(context).pushReplacementNamed(PostsScreen.id);
+            // Navigator.of(context).pushReplacementNamed(PostsScreen.id);
           }
           if (currentState is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
