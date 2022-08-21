@@ -45,6 +45,7 @@ class AuthCubit extends Cubit<AuthState> {
         "email": email,
       });
 
+      userCredential.user!.updateDisplayName(username);
 
       emit(AuthSignedIn());
 
@@ -59,5 +60,9 @@ class AuthCubit extends Cubit<AuthState> {
     } catch(error) {
       emit(AuthFailure(message: 'An error has occured...'));
     }
+  }
+
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }
