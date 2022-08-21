@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/chat_model.dart';
 import '../models/post_model.dart';
+import '../widgets/message_list_style.dart';
 
 class ChatScreen extends StatefulWidget {
   static const String id = "chat_screen";
@@ -15,6 +16,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
   String _message = "";
   late TextEditingController _textEditingController;
 
@@ -38,94 +41,92 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text("Chat"),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("posts")
-                  .doc(post.id)
-                  .collection("comments")
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error"));
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    snapshot.connectionState == ConnectionState.none) {
-                  return Center(child: Text("Loading..."));
-                }
-                return ListView.builder(
-                    itemCount: snapshot.data?.docs.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final QueryDocumentSnapshot doc =
-                          snapshot.data!.docs[index];
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("posts")
+                    .doc(post.id)
+                    .collection("comments").orderBy("timestamp")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text("Error"));
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.connectionState == ConnectionState.none) {
+                    return Center(child: Text("Loading..."));
+                  }
+                  return ListView.builder(
+                      itemCount: snapshot.data?.docs.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final QueryDocumentSnapshot doc =
+                            snapshot.data!.docs[index];
 
-                      final ChatModel chatModel = ChatModel(
-                          message: doc["message"],
-                          userID: doc["userID"],
-                          userName: doc["userName"],
-                          timestamp: doc["timestamp"]);
+                        final ChatModel chatModel = ChatModel(
+                            message: doc["message"],
+                            userID: doc["userID"],
+                            userName: doc["userName"],
+                            timestamp: doc["timestamp"]);
 
-                      return Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(children: [
-                            Text("By ${chatModel.userName}"),
-                            SizedBox(height: 4),
-                            Text(chatModel.message),
-                          ]),
-                        ),
-                      );
-                    });
-              },
-            ),
-          ),
-          Container(
-            height: 50,
-            child: Row(
-              children: [
-                Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: TextField(
-                    controller: _textEditingController,
-                    maxLines: 2,
-                    decoration: InputDecoration(
-                      hintText: "Enter message",
-                    ),
-                    onChanged: (value) {
-                      _message = value;
-                    },
-                  ),
-                )),
-                IconButton(
-                    onPressed: () {
-                      FirebaseFirestore.instance
-                          .collection("posts")
-                          .doc(post.id)
-                          .collection("comments")
-                          .add({
-                            "userID": FirebaseAuth.instance.currentUser!.uid,
-                            "userName":
-                                FirebaseAuth.instance.currentUser!.displayName,
-                            "message": _message,
-                            "timestamp": Timestamp.now(),
-                          })
-                          .then((value) => print("chat doc added"))
-                          .catchError((onError) =>
-                              print("Error has occured while adding chet doc"));
-                      _textEditingController.clear();
-
-                      setState(() {
-                        _message = "";
+                        return Align(
+                            alignment: chatModel.userID ==
+                                currentUserId
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: MessageListStyle(chatModel));
                       });
-                    },
-                    icon: Icon(Icons.arrow_forward_ios_rounded))
-              ],
+                },
+              ),
             ),
-          )
-        ],
+            Container(
+              height: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: TextField(
+                      controller: _textEditingController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        hintText: "Enter message",
+                      ),
+                      onChanged: (value) {
+                        _message = value;
+                      },
+                    ),
+                  )),
+                  IconButton(
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection("posts")
+                            .doc(post.id)
+                            .collection("comments")
+                            .add({
+                              "userID": FirebaseAuth.instance.currentUser!.uid,
+                              "userName": FirebaseAuth
+                                  .instance.currentUser!.displayName,
+                              "message": _message,
+                              "timestamp": Timestamp.now(),
+                            })
+                            .then((value) => print("chat doc added"))
+                            .catchError((onError) => print(
+                                "Error has occured while adding chet doc"));
+                        _textEditingController.clear();
+
+                        setState(() {
+                          _message = "";
+                        });
+                      },
+                      icon: Icon(Icons.arrow_forward_ios_rounded))
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
