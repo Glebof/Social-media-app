@@ -9,11 +9,22 @@ import 'package:social_media_app/screens/create_post_screen.dart';
 import 'package:social_media_app/screens/posts_screen.dart';
 import 'package:social_media_app/screens/sign_up_screen.dart';
 import 'package:social_media_app/screens/sign_in_screen.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
+
+  await SentryFlutter.init(
+        (options) {
+          options.dsn = 'https://91fd9b461aff4c0b8aecd8469933df4c@o1370861.ingest.sentry.io/6674695';
+    },
+    // Init your App.
+    appRunner: () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      runApp(MyApp());
+    }
+  );
+
 }
 
 class MyApp extends StatelessWidget {
